@@ -1,0 +1,20 @@
+
+
+#DRBC here
+#DRBCRUN there
+
+// ttytris
+// Julia Abdel-Monem
+// Spring 2025, CS445
+// Written in bC
+
+// using cpp precompiler - no other comments in this file exist. check out the src folder for more info.
+
+// since I am using a precompiler, i am taking full advantage of #defines to make enums. some return values don't have a logical meaning outside of this
+
+// https://harddrop.com/wiki/Tetris_Guideline
+// Random Bag System and Super Rotation System specifically
+// T Spins
+// Back-To-Back for Tetrises
+
+// follows Tetr.io scoring, somewhat

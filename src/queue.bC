@@ -1,0 +1,90 @@
+#ifndef QUEUE_BC
+#define QUEUE_BC
+
+#include "spriteUtils.bC"
+
+#define QUEUE_SIZE 7
+
+
+int generateQueueChecksum(char queue[]) {
+    char bag[NUM_SHAPES];
+    int checksum: 0;
+
+    bag = SHAPES;
+    
+    for x = 0 to *queue do {
+        for y = 0 to NUM_SHAPES do {
+            if queue[x] == bag[y] then {
+                checksum += y * power(10, x);
+                break;
+            }
+        }
+    }
+
+    return checksum;
+}
+
+
+// ensure that all pieces are drawn before the same piece comes
+
+char loadNextSriteFromQueue(char queue[]) {
+    char nextSprite;
+    char randomSpriteSel;
+
+    int randomNum: 0;
+
+    static char bag[NUM_SHAPES];
+    static int count: 0;
+
+    if count == 0 then {
+        bag = SHAPES;
+        count = NUM_SHAPES;
+    }
+
+    nextSprite = queue[0];
+
+    for i = 0 to *queue -1 do {
+        queue[i] = queue[i + 1];
+    }
+
+    randomNum = ?*SHAPES;
+
+    while bag[randomNum] == ' ' do {
+        randomNum = ?*SHAPES;
+    }
+
+    queue[*queue - 1] = bag[randomNum];
+    bag[randomNum] = ' ';
+    count = count--;
+
+    // output(count); outnl();
+    // outputstr(queue); outnl();
+    // outputstr(bag); outnl();
+
+    return nextSprite;
+}
+
+initializeQueue(char queue[]) {
+ 
+    int randomNum: 0;
+
+    char bag[NUM_SHAPES];
+    
+    bag = SHAPES;
+
+ 
+    for i = 0 to NUM_SHAPES do {
+        
+        randomNum = ?*SHAPES;
+
+        while bag[randomNum] == ' ' do {
+            randomNum = ?*SHAPES;
+        }
+
+        queue[i] = bag[randomNum];
+        bag[randomNum] = ' ';
+
+    }
+}
+
+#endif

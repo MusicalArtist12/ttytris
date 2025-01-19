@@ -1,0 +1,101 @@
+#ifndef BOARD_BC
+#define BOARD_BC
+
+#define BOARD_WIDTH 10
+#define BOARD_HEIGHT 20
+
+#define BOARD_SIZE 200
+
+#define NUM_PIECES_DISPLAYED 3
+
+#define HELD_SPRITE_SIZE 36
+#define BOARD_SPRITE_SIZE 252
+#define QUEUE_SPRITE_SIZE 90
+
+loadHeldSprite(char held; int heldSprite[]; int HELDSPRITESIZE[]) {
+    
+
+    int sprite[SPRITE_SIZE];
+    int SPRITESIZE[2];
+
+    flashArray(sprite, 0);
+
+    SPRITESIZE[0] = SPRITE_HEIGHT;
+    SPRITESIZE[1] = SPRITE_WIDTH;
+
+    HELDSPRITESIZE[0] = 6;
+    HELDSPRITESIZE[1] = 6;
+
+    loadsprite(sprite, held);
+
+
+    flashArray(heldSprite, 0);
+
+    placeSpriteLayer(heldSprite, HELDSPRITESIZE, sprite, SPRITESIZE, 1, 1, 0, 1);
+
+    
+}
+
+loadQueueSprite(char queue[]; int queueOutput[]; int QUEUEOUTPUTSIZE[]) {
+    int QUEUENUMROWS;
+    int QUEUENUMCOLS;
+
+    int sprite[SPRITE_SIZE];
+    int SPRITESIZE[2];
+
+
+  
+    int index;
+
+    QUEUEOUTPUTSIZE[1] = 6;
+    QUEUEOUTPUTSIZE[0] = 5 * NUM_PIECES_DISPLAYED;
+    
+    if QUEUEOUTPUTSIZE[1] * QUEUEOUTPUTSIZE[0] != QUEUE_SPRITE_SIZE then {
+        outputstr("Error: Queue Output is misconfigured"); outnl();
+    }
+
+    SPRITESIZE[0] = SPRITE_HEIGHT;
+    SPRITESIZE[1] = SPRITE_WIDTH;
+
+    flashArray(queueOutput, 0);
+
+    for i = 0 to NUM_PIECES_DISPLAYED do {
+        flashArray(sprite, 0);
+
+        index = 0;
+
+        loadsprite(sprite, queue[i]);
+        placeSpriteLayer(queueOutput, QUEUEOUTPUTSIZE, sprite, SPRITESIZE, 0, i * 5, 1, 1);
+  
+    }
+
+    // outputstr("Next! "); outputstr(queue); outnl();
+
+
+}
+
+loadBoardSprite(int board[]; int BOARDSIZE[]; int boardSprite[]; int OUTPUTBOARDSIZE[]) {
+
+
+    OUTPUTBOARDSIZE[0] = BOARDSIZE[0] + 1;
+    OUTPUTBOARDSIZE[1] = BOARDSIZE[1] + 2;
+
+    // background is layer 8
+    flashArray(boardSprite, 8);
+
+    // blocks on layer 3
+    placeSpriteLayer(boardSprite, OUTPUTBOARDSIZE, board, BOARDSIZE, 1, 0, 0, 4);
+
+    // main block on layer 0
+    placeSpriteLayer(boardSprite, OUTPUTBOARDSIZE, board, BOARDSIZE, 1, 0, 2, 1);
+    
+    // border has bit 1 set
+    addBorderToSprite(boardSprite, 2, OUTPUTBOARDSIZE, false, true, true, true);
+
+
+
+}
+
+
+
+#endif

@@ -1,0 +1,26 @@
+#ifndef KEYBINDS_BC
+#define KEYBINDS_BC
+
+#define QUIT_KEY 'o'
+#define LEFT_KEY 'a'
+#define RIGHT_KEY 'd'
+#define SOFT_DROP_KEY 's'
+#define HARD_DROP_KEY 'w'
+#define CCW_KEY 'q'
+#define CW_KEY 'e'
+#define SWAP_KEY 'c'
+
+displayControls() {
+    outputstr("Controls"); outnl();
+    outputc(QUIT_KEY); outputstr(": quit"); outnl();
+    outputc(LEFT_KEY); outputstr(": move left"); outnl();
+    outputc(RIGHT_KEY); outputstr(": move right"); outnl();
+    outputc(SOFT_DROP_KEY); outputstr(": soft drop (move one down)"); outnl();
+    outputc(HARD_DROP_KEY); outputstr(": hard drop (move all the way down and lock piece)"); outnl();
+    outputc(CCW_KEY); outputstr(": rotate counterclockwise"); outnl();
+    outputc(CW_KEY); outputstr(": rotate clockwise"); outnl();
+    outputc(SWAP_KEY); outputstr(": swap"); outnl();
+
+}
+
+#endif

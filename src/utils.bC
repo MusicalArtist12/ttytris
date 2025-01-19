@@ -1,0 +1,51 @@
+#ifndef UTILS_BC
+#define UTILS_BC
+
+flashArray(int arr[]; int val) {
+    for i = 0 to *arr do {
+        arr[i] = val;
+    }
+}
+
+outputstr(char string[]) {
+
+    for i = 0 to *string do {
+        outputc(string[i]);
+    }
+}
+
+bool bitIsSet(int num; int bit) {
+    // output(num);
+
+    while bit > 0 do {
+        num /= 2;
+        bit = bit--;
+        // output(num);
+    }
+
+    // output(num);
+
+    num = num % 2;
+
+    // output(num);
+
+    if num == 1 then {
+        return true;
+    }
+
+    return false;
+}
+
+// basically power of 2;
+int power(int number; int power) {
+    int output: 1;
+
+    for i = power to 0 do {
+        output *= number;
+    }
+
+    return output;
+}
+
+
+#endif
