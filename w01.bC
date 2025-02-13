@@ -533,7 +533,268 @@ displayControls() {
 
 
 
+bool spawnPieceFun(int boardSpriteData[]; int boardSpriteSize[]; char currentPiece; int currentPieceData[]; int currentPieceSize[]; int locationData[]) {
+    int timeout;
+    int placementStatus;
 
+    loadsprite(currentPieceData, currentPiece);
+
+    locationData[0] = 3;
+    locationData[1] = -4;
+    locationData[2] = 0;
+
+    placementStatus = canPlacePiece(boardSpriteData, boardSpriteSize, currentPieceData, currentPieceSize, locationData[0], locationData[1], locationData[2]);
+
+    timeout = 0;
+
+    while placementStatus != 0 do {
+        if timeout == 10 then {
+            return false;
+            break;
+        }
+
+        if placementStatus == 1 then
+            locationData[2] = (locationData[2] + 1) % 4;
+        else
+            locationData[1] = locationData[1]++;
+
+        timeout = timeout++;
+
+        placementStatus = canPlacePiece(boardSpriteData, boardSpriteSize, currentPieceData, currentPieceSize, locationData[0], locationData[1], locationData[2]);
+    }
+
+    return true;
+}
+
+hardDropFun(int boardSpriteData[]; int boardSpriteSize[]; char currentPiece; int currentPieceData[]; int currentPieceSize[]; int locationData[]; bool lastMoveWasSpin) {
+    int height: 0;
+    int linesCleared: 0;
+    bool isTSpin: false;
+    int numCorners: 0;
+
+    int value: 0;
+
+    static bool lastWasTSpin: false;
+    static int lastType: 0;
+    static int combo: 0;
+
+    while canPlacePiece(boardSpriteData, boardSpriteSize, currentPieceData, currentPieceSize, locationData[0], locationData[1], locationData[2]) == 0 do {
+        locationData[1] += 1;
+        height = height++;
+    }
+
+
+    locationData[1] -= 1;
+    height = height--;
+
+    output(height); outnl();
+    outputc(currentPiece); outnl();
+    outputb(lastMoveWasSpin); outnl();
+
+    placeSpriteLayer(boardSpriteData, boardSpriteSize, currentPieceData, currentPieceSize, locationData[0], locationData[1], locationData[2], 1);
+
+    score += 2 * height;
+
+    if height == 0 and currentPiece == 't' and lastMoveWasSpin then {
+        if boardSpriteData[(locationData[1] + 1) * boardSpriteSize[0] + locationData[0] + 1] != 0 or outOfBounds(locationData[0], locationData[1], 1, 1, boardSpriteSize) != 0 then {
+            numCorners = numCorners++;
+        }
+        if boardSpriteData[(locationData[1] + 1) * boardSpriteSize[0] + locationData[0] + 3] != 0 or outOfBounds(locationData[0], locationData[1], 1, 3, boardSpriteSize) != 0 then {
+            numCorners = numCorners++;
+        }
+        if boardSpriteData[(locationData[1] + 3) * boardSpriteSize[0] + locationData[0] + 1] != 0 or outOfBounds(locationData[0], locationData[1], 3, 1, boardSpriteSize) != 0 then {
+            numCorners = numCorners++;
+        }
+        if boardSpriteData[(locationData[1] + 3) * boardSpriteSize[0] + locationData[0] + 3] != 0 or outOfBounds(locationData[0], locationData[1], 3, 3, boardSpriteSize) != 0 then {
+            numCorners = numCorners++;
+        }
+
+        if numCorners >= 3 then {
+            isTSpin = true;
+        }
+    }
+
+    linesCleared = removeFullLines(boardSpriteData, boardSpriteSize, 0);
+    numLinesCleared += linesCleared;
+
+    if isTSpin then {
+        if linesCleared == 0 then {
+            value = 400;
+        }
+        if linesCleared == 1 then {
+            value = 800;
+        }
+        else if linesCleared == 2 then {
+            value = 1200;
+        }
+        else if linesCleared == 3 then {
+            value = 1600;
+        }
+
+        if lastType == linesCleared and linesCleared > 1 and lastWasTSpin then {
+            value += value / 2;
+            outputstr("B2B ");
+        }
+
+        if linesCleared == 0 then {
+            outputstr("T-Spin!");
+        }
+        if linesCleared == 1 then {
+            outputstr("T-Spin Single!");
+        }
+        else if linesCleared == 2 then {
+            outputstr("T-Spin Double!");
+        }
+        else if linesCleared == 3 then {
+            outputstr("T-Spin Triple!");
+        }
+
+        outnl();
+    }
+    else {
+
+        if linesCleared == 1 then {
+            value = 100;
+        }
+        else if linesCleared == 2 then {
+            value = 300;
+        }
+        else if linesCleared == 3 then {
+            value = 500;
+
+        }
+        else if linesCleared == 4 then {
+            value = 800;
+        }
+
+        if lastType == linesCleared and linesCleared > 1 then {
+            value += value / 2;
+            outputstr("B2B ");
+        }
+
+        if linesCleared == 1 then {
+            outputstr("Single!");
+        }
+        else if linesCleared == 2 then {
+            outputstr("Double!");
+        }
+        else if linesCleared == 3 then {
+            outputstr("Triple!");
+        }
+        else if linesCleared == 4 then {
+            outputstr("Quad!");
+        }
+
+        outnl();
+    }
+
+    score += value;
+
+    if linesCleared > 0 then {
+        lastType = linesCleared;
+        lastWasTSpin = isTSpin;
+        combo += 1;
+
+        if combo > 1 then {
+            outputstr("Combo: "); output(combo);
+            score += combo * 50;
+        }
+    }
+    else {
+        combo = 0;
+    }
+
+
+
+}
+
+srsRotationSystem(int boardSpriteData[]; int boardSpriteSize[]; int currentPieceData[]; int currentPieceSize[]; int locationData[]; int SRSOffsetDataFirst[]; int SRSOffsetDataFinal[]) {
+    int offsetX, offsetY;
+
+    int backupLocationData[3];
+
+    backupLocationData = locationData;
+
+    if *SRSOffsetDataFirst != *SRSOffsetDataFinal then {
+        return;
+    }
+
+    for i = 0 to *SRSOffsetDataFirst by 2 do {
+        offsetX = SRSOffsetDataFirst[i] - SRSOffsetDataFinal[i];
+        offsetY = SRSOffsetDataFirst[i + 1] - SRSOffsetDataFinal[i + 1];
+
+
+
+        locationData[0] += offsetX;
+        locationData[1] -= offsetY;
+
+        if canPlacePiece(boardSpriteData, boardSpriteSize, currentPieceData, currentPieceSize, locationData[0], locationData[1], locationData[2]) == 0 then {
+            return;
+        }
+
+        locationData = backupLocationData;
+    }
+
+    locationData = backupLocationData;
+    return;
+}
+
+
+drawGame(int board[], boardSize[]; char queue[]; char held) {
+
+    static char lastHeld: '\0';
+    static int lastQueueChecksum: 0;
+
+    int currentQueueChecksum;
+
+    static int heldSprite[36];
+    static int heldSpriteSize[2];
+
+    static int boardSprite[252];
+    static int boardSpriteSize[2];
+
+    static int queueOutput[90];
+    static int queueSpriteSize[2];
+
+    int screenSprite[900];
+    int screenSpriteSize[2];
+
+    screenSpriteSize[0] = 30;
+    screenSpriteSize[1] = 30;
+
+    flashArray(screenSprite, 2);
+
+    currentQueueChecksum = generateQueueChecksum(queue);
+
+    if lastHeld != held then {
+        flashArray(heldSprite, 0);
+        loadHeldSprite(held, heldSprite, heldSpriteSize);
+    }
+
+    if currentQueueChecksum != lastQueueChecksum then {
+        flashArray(queueOutput, 0);
+        loadQueueSprite(queue, queueOutput, queueSpriteSize);
+        lastQueueChecksum = currentQueueChecksum;
+    }
+
+    flashArray(boardSprite, 0);
+    loadBoardSprite(board, boardSize, boardSprite, boardSpriteSize);
+
+    placeSprite(screenSprite, screenSpriteSize, heldSprite, heldSpriteSize, 1, 1);
+    placeSprite(screenSprite, screenSpriteSize, boardSprite, boardSpriteSize, 1 + heldSpriteSize[1], 1);
+    placeSprite(screenSprite, screenSpriteSize, queueOutput, queueSpriteSize, 1 + heldSpriteSize[1] + boardSpriteSize[1], 1);
+
+
+
+
+
+
+
+    outnl();
+    outputstr("Current Score: "); output(score); outnl();
+    outputstr("Lines Cleared: "); output(numLinesCleared); outnl();
+    outputsprite(screenSprite, screenSpriteSize, "██", "🮖🮖", "🮐🮐", "🭽🭾", "  ");
+}
 
 intro() {
     char temp: '\0';
@@ -643,7 +904,7 @@ main() {
     boardSpriteSize[1] = 10;
 
     locationData[0] = 3;
-    locationData[1] = -4;
+    locationData[1] = -3;
     locationData[2] = 0;
 
     numLinesCleared = 0;
@@ -928,6 +1189,8 @@ main() {
 
 
 gimmeCreditFunction() {
+    int gimmeCredit;
+
     bool gimmeCreditBool;
 
 

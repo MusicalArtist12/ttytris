@@ -461,6 +461,8 @@ main() {
 
 // look, i want credit, and i can't find places (yet) for these.
 gimmeCreditFunction() {
+    int gimmeCredit;
+    
     bool gimmeCreditBool;
 
        // [TODO!]
